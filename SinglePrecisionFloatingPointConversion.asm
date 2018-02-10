@@ -23,10 +23,38 @@ main:
 	jal print_hex			#print_hex(converted_number)
 	j main				#go on asking the user
 conversion:
-	bne $a0, 0, not_zero
+	addi $s0, $a0, 0		#s0 = the integer
+	bne $s0, 0, not_zero		#Check if the integer is 0
 	addi $v0, $zero, 0		#return 0
 	jr $ra
-not_zero:
+not_zero:				#The number is not zero
+	#Check if it is negative
+	srl $s1, $s0, 31		#Shift right to move the sign bit to the most right bit (1st bit)
+	beq $s1, 0, positive		#The sign bit is 0, it is positive
+nagtive:#Convert it to positive
+	not $s0, $s0			#convert all 1s to 0s and 0s to 1s
+	addi $s0, $s0, 1		#add 1
+positive:
+	sll $s1, $s1, 31		#s1 = either 0x1000000 if the int is neg, or 0x00000000 if the int is positive
+	addi $s2, $zero, 0		#int exponent = 0
+	addi $t0, $s0, 0		#t0 = s0
+while:	beq $t0, 1, end_while		#if the integer is 1, the exponent will be 0, break
+	srl $t0, $t0, 1			#shift right until get to the furthest '1' on the left
+	addi $s2, $s2, 1		#exponent += 1
+	j while
+end_while:
+	addi $t0, $zero, 32		#t0 = 32
+	sub $t1, $t0, $s2		#t1 is the position of 1st number of the fraction part, counted from the right=32 - exponent
+	addi $s2, $s2, 127		#Exponent in the biased form = exponent + 127
+	#separate the fraction part
+	sllv $s0, $s0, $t1		
+	srl $s0, $s0, 9			#s0 = the fraction part
+	#Add 3 parts together: sign bit, exponent, and the fraction part to get the converted number
+	add $s1, $s1, $s2		#result = sign bit + exponent
+	add $s1, $s1, $s0		#result = result + fraction part
+	
+	addi $v0, $s1, 0		#return the converted number
+	jr $ra
 
 #print_hex(int num)
 print_hex:
