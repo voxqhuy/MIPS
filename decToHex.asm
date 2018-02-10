@@ -1,5 +1,4 @@
 # Integers to hexadecimal numbers conversion
-# Lab 5.1
 	# Data Memory Section
 	.data
 number:	.asciiz "Enter a number: "
