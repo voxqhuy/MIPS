@@ -44,13 +44,13 @@ while:	beq $t0, 1, end_while		#if the integer is 1, the exponent will be 0, brea
 	j while
 end_while:
 	addi $t0, $zero, 32		#t0 = 32
-	sub $t1, $t0, $s2		#t1 is the position of 1st number of the fraction part, counted from the right=32 - exponent
+	sub $t1, $t0, $s2		#t1 is the position of mantissa, counted from the right=32 - exponent
 	addi $s2, $s2, 127		#Exponent in the biased form = exponent + 127
 	sll $s2, $s2, 23		#Shift the exponent to the its position in converted number
-	#separate the fraction part
+	#separate the mantissa
 	sllv $s0, $s0, $t1		
-	srl $s0, $s0, 9			#s0 = the fraction part
-	#Add 3 parts together: sign bit, exponent, and the fraction part to get the converted number
+	srl $s0, $s0, 9			#s0 = the mantissa
+	#Add 3 parts together: sign bit, exponent, and the mantisaa to get the converted number
 	add $s1, $s1, $s2		#result = sign bit + exponent
 	add $s1, $s1, $s0		#result = result + fraction part
 	
