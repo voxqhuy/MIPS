@@ -2,7 +2,7 @@
 # Vo Huy
 	# Data Memory Section
 	.data
-number:	.asciiz "Enter a number: "
+number:	.asciiz "\nEnter a number: "
 	.align 2
 hex:	.space 40
 	# Program Memory section
@@ -46,6 +46,7 @@ end_while:
 	addi $t0, $zero, 32		#t0 = 32
 	sub $t1, $t0, $s2		#t1 is the position of 1st number of the fraction part, counted from the right=32 - exponent
 	addi $s2, $s2, 127		#Exponent in the biased form = exponent + 127
+	sll $s2, $s2, 23		#Shift the exponent to the its position in converted number
 	#separate the fraction part
 	sllv $s0, $s0, $t1		
 	srl $s0, $s0, 9			#s0 = the fraction part
