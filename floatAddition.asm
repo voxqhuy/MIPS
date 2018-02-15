@@ -41,6 +41,9 @@ add_float:
 	jal compare_float		#compare_float(float1, float2)
 	lw $ra, 4($sp)
 	addi $sp, $sp, 4
+	# TODO use exponent 2
+	# add metisa 1 and 2
+	# if signbit 2 = 1, result's sign bit = 1
 
 #compare 2 float numbers and return them with the smaller one first and the bigger one second
 compare_float:				
@@ -50,6 +53,13 @@ compare_float:
 	srl $t2, $t2, 24		#t2 = the exponent of floating1
 	sll $t3, $t1, 1
 	srl $t3, $t3, 24		#t3 = the exponent of floating2
-	bne $t2, $t3, swap_float
+	bge $t2, $t3, swap_float	#if floating1's exponent > floating2's exponent, swap them
+	move $v0, $t0
+	move $v1, $t1
+	jr $ra				#v0's exponent is smaller
+swap_float:
+	move $v0, $t1
+	move $v1, $t0
+	jr $ra				#v0's exponent is smaller
 	
 	
