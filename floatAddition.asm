@@ -120,8 +120,8 @@ for:	beq $t0, 0, after_for
 	addi $t2, $t2, 1
 	j for
 after_for:
-	addi $t4, $zero, 24		#int t2 = 24
-	sub $t1, $t4, $t1		#t1 = t2 - t1 = the number of bits we need to shift the pre-normalized mentisa
+	addi $t2, $zero, 24		#int t2 = 24
+	sub $t1, $t2, $t1		#t1 = t2 - t1 = the number of bits we need to shift the pre-normalized mentisa
 	sllv $s3, $s3, $t1		#s3 = normalized mantisa
 	sub $s4, $s4, $t1		#s4 = the normalized exponent
 	j finished_normalizing
