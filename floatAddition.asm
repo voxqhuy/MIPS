@@ -6,7 +6,8 @@ float1:	.asciiz "\nEnter the first number to add: "
 	.align 2
 float2:	.asciiz "Enter the second number to add: "
 	.align 2
-result:	
+result:	.asciiz "Result: "
+	.align 2
 new_line:
 	.asciiz "\n"
 	# Program Memory section
@@ -15,28 +16,28 @@ new_line:
 main:	
 	# Prompt the user to enter a number
 	li $v0, 4 			#print string
-	la $a0, float1 			#"\nEnter the first number: "
+	la $a0, float1 			#"\nEnter the first number to add: "
 	syscall
 	# Get the first number
 	li $v0, 6 			#read float
 	syscall
 	addi $sp, $sp, -12
-	swc1 $f0, 8($sp)		#save float1 to the stack
+	swc1 $f0, 12($sp)		#save float1 to the stack
 	
 	# Prompt the user to enter a number
 	li $v0, 4 			#print string
-	la $a0, float2 			#"\nEnter the second number: "
+	la $a0, float2 			#"\nEnter the second number to add: "
 	syscall
 	
 	# Get the second number
 	li $v0, 6 			#read float
 	syscall
-	swc1 $f0, 12($sp)		#save float2 to the stack
+	swc1 $f0, 8($sp)		#save float2 to the stack
 	li $v0, 4
-	la $a0, new_line		#print new line
+	la $a0, result			#"Result: "
 	syscall
 	
-	lw $a0, 8($sp)			#a0 = the first floating number
+	lw $a0, 12($sp)			#a0 = the first floating number
 	lw $a1, 8($sp)			#a1 = the second floating number
 	jal add_float			#add_float(float1, float2)
 	
