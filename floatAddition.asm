@@ -46,7 +46,7 @@ main:
 	jal add_float			#add_float(float1, float2)
 	
 	sw $v0, 8($sp)			#get the sum and save to the stack
-	lwc1 $f0, 8($sp)		#loat the sum back to $f0
+	lwc1 $f12, 8($sp)		#loat the sum back to $f0
 	li $v0, 2			#print float
 	syscall				#print sum
 	li $v0, 4
@@ -103,15 +103,15 @@ is_normalized:
 	srl $s3, $s3, 9			#s3 = normalized mantisa
 	j finished_normalizing
 is_unnormalized:
-	bleu $s3, 0x00800000, over_flow_right
+	ble $s3, $s7, over_flow_right
 over_flow_left:
 	srl $s3, $s3, 1			#s3 = normalized mantisa
 	addi $s4, $s4, 1		#s4 = the normalized exponent
 	j finished_normalizing
 over_flow_right:
 	addi $t0, $s3, 0		#t0 = unnormalized mantisa
-	srl $t0, $t0, 1			#start shifting it to the right
-	addi $t1, $zero, 1		#use t1 to figure out the most significant bit
+	#srl $t0, $t0, 1			#start shifting it to the right
+	addi $t1, $zero, 0		#use t1 to figure out the most significant bit
 	addi $t2, $zero, 0		#int i = 0
 	addi $t3, $zero, 23		#n = 23, the number of times we shift (used for the for loop)
 for:	beq $t0, 0, after_for
@@ -120,10 +120,10 @@ for:	beq $t0, 0, after_for
 	addi $t2, $t2, 1
 	j for
 after_for:
-	addi $t2, $zero, 24		#int t2 = 24
-	sub $t1, $t2, $t1		#t1 = t2 - t1 = the number of bits we need to shift the pre-normalized mentisa
+	addi $t4, $zero, 24		#int t2 = 24
+	sub $t1, $t4, $t1		#t1 = t2 - t1 = the number of bits we need to shift the pre-normalized mentisa
 	sllv $s3, $s3, $t1		#s3 = normalized mantisa
-	add $s4, $s4, $t1		#s4 = the normalized exponent
+	sub $s4, $s4, $t1		#s4 = the normalized exponent
 	j finished_normalizing
 	
 finished_normalizing:
