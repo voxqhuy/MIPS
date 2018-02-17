@@ -8,12 +8,15 @@ float2:	.asciiz "Enter the second number to add: "
 	.align 2
 result:	.asciiz "Result: "
 	.align 2
+mentisa:.word 0x00800000
+	.align 2
 new_line:
 	.asciiz "\n"
 	# Program Memory section
 	.text
 	.globl main
 main:	
+	lw $s7, mentisa			#s7 = 0x00800000
 	# Prompt the user to enter a number
 	li $v0, 4 			#print string
 	la $a0, float1 			#"\nEnter the first number to add: "
@@ -22,7 +25,7 @@ main:
 	li $v0, 6 			#read float
 	syscall				#$f0 = float1
 	addi $sp, $sp, -8
-	swc1 $f0, 4($sp)		#save float1 to the stack
+	swc1 $f0, 8($sp)		#save float1 to the stack
 	
 	# Prompt the user to enter a number
 	li $v0, 4 			#print string
@@ -32,18 +35,18 @@ main:
 	# Get the second number
 	li $v0, 6 			#read float
 	syscall
-	swc1 $f0, ($sp)		#save float2 to the stack
+	swc1 $f0, 4($sp)		#save float2 to the stack
 	li $v0, 4
 	la $a0, result			#"Result: "
 	syscall
 	
-	lw $a1, 0($sp)			#a1 = the second floating number
-	lw $a0, 4($sp)			#a0 = the first floating number
+	lw $a1, 4($sp)			#a1 = the second floating number
+	lw $a0, 8($sp)			#a0 = the first floating number
 	
 	jal add_float			#add_float(float1, float2)
 	
-	sw $v0, 4($sp)			#get the sum and save to the stack
-	lwc1 $f0, 4($sp)		#loat the sum back to $f0
+	sw $v0, 8($sp)			#get the sum and save to the stack
+	lwc1 $f0, 8($sp)		#loat the sum back to $f0
 	li $v0, 2			#print float
 	syscall				#print sum
 	li $v0, 4
@@ -53,9 +56,9 @@ main:
 	j main				#go on asking the user
 	
 add_float:
-	sw $ra, 4($sp)			#push $ra to the stack
+	sw $ra, 8($sp)			#push $ra to the stack
 	jal compare_float		#compare_float(float1, float2)
-	lw $ra, 4($sp)
+	lw $ra, 8($sp)
 	addi $sp, $sp, 8
 	
 	# add mentisa 1 and 2
@@ -79,9 +82,9 @@ add_float:
 	srl $t3, $t3, 9			#t3 = the bigger number's mentisa
 	
 	#Start shifting the mentisa of the smaller number
-	addi $t2, $t2, 0x00800000	#make t2 the full mentisa of the smaller number
+	add $t2, $t2, $s7		#make t2 the full mentisa of the smaller number
 	srlv $t2, $t2, $t0
-	addi $t3, $t3, 0x00800000	#make t3 the full mentisa of the bigger number
+	add $t3, $t3, $s7		#make t3 the full mentisa of the bigger number
 	
 	srl $t0, $s0, 31		#t0 = the sign bit of the smaller number
 	srl $t1, $s1, 31		#t1 = the sign bit of the bigger number
