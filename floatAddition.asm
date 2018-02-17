@@ -20,9 +20,9 @@ main:
 	syscall
 	# Get the first number
 	li $v0, 6 			#read float
-	syscall
-	addi $sp, $sp, -12
-	swc1 $f0, 12($sp)		#save float1 to the stack
+	syscall				#$f0 = float1
+	addi $sp, $sp, -8
+	swc1 $f0, 4($sp)		#save float1 to the stack
 	
 	# Prompt the user to enter a number
 	li $v0, 4 			#print string
@@ -32,17 +32,18 @@ main:
 	# Get the second number
 	li $v0, 6 			#read float
 	syscall
-	swc1 $f0, 8($sp)		#save float2 to the stack
+	swc1 $f0, ($sp)		#save float2 to the stack
 	li $v0, 4
 	la $a0, result			#"Result: "
 	syscall
 	
-	lw $a0, 12($sp)			#a0 = the first floating number
-	lw $a1, 8($sp)			#a1 = the second floating number
+	lw $a1, 0($sp)			#a1 = the second floating number
+	lw $a0, 4($sp)			#a0 = the first floating number
+	
 	jal add_float			#add_float(float1, float2)
 	
-	sw $v0, 8($sp)			#get the sum and save to the stack
-	swc1 $f0, 8($sp)		#loat the sum back to $f0
+	sw $v0, 4($sp)			#get the sum and save to the stack
+	lwc1 $f0, 4($sp)		#loat the sum back to $f0
 	li $v0, 2			#print float
 	syscall				#print sum
 	li $v0, 4
@@ -55,7 +56,7 @@ add_float:
 	sw $ra, 4($sp)			#push $ra to the stack
 	jal compare_float		#compare_float(float1, float2)
 	lw $ra, 4($sp)
-	addi $sp, $sp, 12
+	addi $sp, $sp, 8
 	
 	# add mentisa 1 and 2
 	# subtract 2 - 1
@@ -69,8 +70,8 @@ add_float:
 	sll $t0, $s0, 1
 	srl $t0, $t0, 24		#t0 = the smaller number's exponent
 	sll $t1, $s1, 1
-	srl $s4, $t1, 24		#t1 = the bigger number's exponent
-	sub $t0, $t1, $t0		#t0 = the difference between 2 exponents
+	srl $s4, $t1, 24		#s4 = the bigger number's exponent
+	sub $t0, $s4, $t0		#t0 = the difference between 2 exponents
 	
 	sll $t2, $s0, 9
 	srl $t2, $t2, 9			#t2 = the smaller number's mentisa
