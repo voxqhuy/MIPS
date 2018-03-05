@@ -134,12 +134,12 @@ selection_sort:
 	
 	addi $s0, $a1, 0		#s0 = length
 	addi $s1, $zero, 0		#int i = 0
-for1:	bge $s1, $s0, after_for1	#if i >= length, exit the loop
+for11:	bge $s1, $s0, after_for11	#if i >= length, exit the loop
 
 	addi $s2, $s1, 0		#index_of_min = i;
 	addi $s3, $s1, 0		#int j = i
-	j for2
-after_for2:
+	j for22
+after_for22:
 	#SWAPPING ELEMENTS
 	sw $a1, 4($sp)			#push a1 of selection_sort (length) to the stack
 	#a0 is still *sum
@@ -149,8 +149,8 @@ after_for2:
 	lw $a1, 4($sp)			#pop a1 of selection_sort (length) from the stack
 	
 	add $s1, $s1, 1			#i++
-	j for1				#looping for1
-for2:	bge $s3, $s0, after_for2	#if j >= length, exit the loop
+	j for11				#looping for1
+for22:	bge $s3, $s0, after_for22	#if j >= length, exit the loop
 	
 	sll $t0, $s2, 2			#t0 = index_of_min*4 the distance from the element to the base adress
 	add $t0, $t0, $a0		#the address of nums[index_of_min]
@@ -164,9 +164,9 @@ for2:	bge $s3, $s0, after_for2	#if j >= length, exit the loop
 	addi $s2, $s3, 0
 skip_new_min:
 	add $s3, $s3, 1			#j++
-	j for2				#looping for1
+	j for22				#looping for1
 
-after_for1:
+after_for11:
 	lw $ra, 8($sp)			#pop $ra from the stack for selection_sort function
 	addi $sp, $sp, 8		
 	jr $ra				#finish selection_sort function
@@ -193,7 +193,7 @@ print_array:
 	sw $ra, 4($sp)			#push $ra of print_array to the stack
 	la $s5, ($a0)			#adress of nums
 	addi $t1, $a1, 0		#t1 = length
-	addi $t7, $t1, -1		#t7 = length - 1
+	addi $t7, $a1, -1		#t7 = length - 1
 	addi $s4, $zero, 0 		#int i = 0;
 loop_myarray:	
 	bge $s4, $t1, after_loop_myarray# if i >= length run after_for1
